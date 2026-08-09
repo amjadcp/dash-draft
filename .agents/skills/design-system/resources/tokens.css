@@ -1,0 +1,128 @@
+/**
+ * DashDraft Design Tokens
+ * Adapted from the reference brand direction (minimal, editorial, monochrome-first).
+ * Theme switching: set data-theme="light" | "dark" on <html>. Defaults to light in :root,
+ * overridden under [data-theme="dark"]. Components must consume these variables only —
+ * never hardcode a raw color/size value in component code.
+ */
+
+:root {
+  /* ---- Base surfaces ---- */
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f4f4f8;       /* card / section backgrounds */
+  --color-bg-raised: #ffffff;       /* modals, popovers — same as bg in light, differentiate via border/shadow */
+  --color-border: #e4e4ea;
+  --color-border-strong: #0d0d10;   /* icon badge strokes, high-emphasis outlines */
+
+  /* ---- Text ---- */
+  --color-text-primary: #0d0d10;
+  --color-text-secondary: #6b6e7a;
+  --color-text-tertiary: #9a9aa5;
+
+  /* ---- Emphasis surface (inverts relative to theme — used for CTA/banner blocks) ---- */
+  --color-emphasis-bg: #0d0d10;
+  --color-emphasis-text: #ffffff;
+  --color-emphasis-text-secondary: #b5b5bf;
+  --color-emphasis-border: #2a2a30;
+
+  /* ---- Accent (sparing use — interactive/brand moments only) ---- */
+  --color-accent: #6366f1;
+  --color-accent-hover: #4f46e5;
+  --color-accent-subtle: #eef0fe;
+  --color-accent-text-on-accent: #ffffff;
+
+  /* ---- Status ---- */
+  --color-success: #16a34a;
+  --color-success-subtle: #f0fdf4;
+  --color-warning: #d97706;
+  --color-warning-subtle: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-subtle: #fef2f2;
+
+  /* ---- Shadow (used sparingly — the base aesthetic is flat) ---- */
+  --shadow-sm: 0 1px 2px rgba(13, 13, 16, 0.06);
+  --shadow-md: 0 4px 12px rgba(13, 13, 16, 0.08);
+
+  /* ---- Typography ---- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  --text-xs: 0.75rem;    /* 12px — meta/labels */
+  --text-sm: 0.875rem;   /* 14px — secondary body, nav */
+  --text-base: 1rem;     /* 16px — body */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px — card titles */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px — CTA/hero headings */
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.7;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---- Spacing (4px base scale) ---- */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-20: 5rem;    /* 80px */
+
+  /* ---- Radius ---- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* ---- Icon badge (circular outline icon container) ---- */
+  --badge-size: 56px;
+  --badge-border-width: 1.5px;
+}
+
+[data-theme='dark'] {
+  /* ---- Base surfaces ---- */
+  --color-bg: #0b0b0d;
+  --color-bg-subtle: #17171c;
+  --color-bg-raised: #1c1c22;
+  --color-border: #26262c;
+  --color-border-strong: #f5f5f7;
+
+  /* ---- Text ---- */
+  --color-text-primary: #f5f5f7;
+  --color-text-secondary: #9a9aa5;
+  --color-text-tertiary: #6b6e7a;
+
+  /* ---- Emphasis surface (inverts relative to theme: light panel on dark page) ---- */
+  --color-emphasis-bg: #f5f5f7;
+  --color-emphasis-text: #0d0d10;
+  --color-emphasis-text-secondary: #4a4a52;
+  --color-emphasis-border: #d8d8de;
+
+  /* ---- Accent (lighter tint for legibility on dark surfaces) ---- */
+  --color-accent: #818cf8;
+  --color-accent-hover: #a5b0fb;
+  --color-accent-subtle: #1e1b4b;
+  --color-accent-text-on-accent: #0d0d10;
+
+  /* ---- Status ---- */
+  --color-success: #4ade80;
+  --color-success-subtle: #0f2417;
+  --color-warning: #fbbf24;
+  --color-warning-subtle: #2b1e05;
+  --color-danger: #f87171;
+  --color-danger-subtle: #2b0f0f;
+
+  /* ---- Shadow (deeper, since dark surfaces need more separation than a tint alone) ---- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
