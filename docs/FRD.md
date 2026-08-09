@@ -8,7 +8,7 @@
 
 ## 1. Document Purpose
 
-Defines *what* DashDraft does, screen by screen and flow by flow, building on the *how it's built* decisions already made in the architecture doc. Each requirement below has an ID (`FR-#`) for traceability back to your original feature list (mapped in §11).
+Defines _what_ DashDraft does, screen by screen and flow by flow, building on the _how it's built_ decisions already made in the architecture doc. Each requirement below has an ID (`FR-#`) for traceability back to your original feature list (mapped in §11).
 
 ---
 
@@ -16,7 +16,7 @@ Defines *what* DashDraft does, screen by screen and flow by flow, building on th
 
 **Primary persona:** a technical-enough user (analyst, founder, PM) who has a CSV/Excel dataset and wants to ask it questions from inside ChatGPT or Gemini, without pasting the data in or paying for the tokens a full-file upload would cost.
 
-**Core story:** *"I drop my sales CSV into DashDraft, wire it up to ChatGPT once, and from then on I just ask ChatGPT questions about my sales data — the raw rows never leave my machine, and no random SELECT * dump ever ends up in a chat transcript."*
+**Core story:** _"I drop my sales CSV into DashDraft, wire it up to ChatGPT once, and from then on I just ask ChatGPT questions about my sales data — the raw rows never leave my machine, and no random SELECT * dump ever ends up in a chat transcript."_
 
 ---
 
@@ -30,7 +30,7 @@ Defines *what* DashDraft does, screen by screen and flow by flow, building on th
 /{userId}?tab=settings     Settings
 ```
 
-- `{userId}` is a routing identifier, generated client-side and persisted to `localStorage` — **it is not a security credential.** Anyone who opens the URL without the matching browser's `localStorage` entry *and* without local-folder access sees an empty/onboarding shell, not data. This distinction should be stated in the landing page copy and in Settings, so users don't mistake URL secrecy for actual access control.
+- `{userId}` is a routing identifier, generated client-side and persisted to `localStorage` — **it is not a security credential.** Anyone who opens the URL without the matching browser's `localStorage` entry _and_ without local-folder access sees an empty/onboarding shell, not data. This distinction should be stated in the landing page copy and in Settings, so users don't mistake URL secrecy for actual access control.
 - Sidebar has exactly three entries, per spec: **Analytics** (upcoming, visually disabled with a "Soon" badge), **Tables** (primary workspace), **Settings** (pinned to the bottom of the sidebar, visually separated from the other two).
 
 ---
@@ -154,9 +154,7 @@ On first folder selection, DashDraft writes (and thereafter maintains) a config 
     "theme": "system",
     "mcpHandshakeConfirmed": false
   },
-  "workspaces": [
-    { "id": "default", "name": "Default", "createdAt": "2026-08-09T12:00:00Z" }
-  ]
+  "workspaces": [{ "id": "default", "name": "Default", "createdAt": "2026-08-09T12:00:00Z" }]
 }
 ```
 
@@ -166,7 +164,7 @@ Query log entries and table metadata are written as separate files under the sam
 
 ### FR-14 — Settings: Regenerate OAuth Credentials
 
-- Settings tab includes a "Regenerate connector credentials" action, with a confirmation step that explicitly warns: *this will immediately invalidate the current key/secret, and any AI platform connector using the old credentials will stop working until reconnected.*
+- Settings tab includes a "Regenerate connector credentials" action, with a confirmation step that explicitly warns: _this will immediately invalidate the current key/secret, and any AI platform connector using the old credentials will stop working until reconnected._
 - On confirm: relay issues a new client ID/secret pair, old credentials are invalidated relay-side immediately (not just locally), and the local config file is updated.
 - The onboarding checklist's "Connect MCP" step (FR-4, step 3) reverts to incomplete after regeneration, since the prior handshake was against now-invalid credentials.
 
@@ -185,7 +183,7 @@ Query log entries and table metadata are written as separate files under the sam
 Handles the case where a user points DashDraft at a folder that already contains a `.dashdraft/config.json` from prior use (same browser after a `localStorage` clear, or a different browser/machine given folder access, e.g. via a synced cloud folder).
 
 - On folder selection, DashDraft checks for an existing `.dashdraft/config.json` **before** treating it as a fresh setup.
-- If found, and it contains a `customerId` different from the current `localStorage` value (or `localStorage` is empty): prompt the user with an explicit choice — *"This folder is already set up for a DashDraft profile ({customerId}). Load it and switch this browser to that profile, or keep your current profile and choose a different folder?"* Never silently overwrite either the folder's config or the browser's current session.
+- If found, and it contains a `customerId` different from the current `localStorage` value (or `localStorage` is empty): prompt the user with an explicit choice — _"This folder is already set up for a DashDraft profile ({customerId}). Load it and switch this browser to that profile, or keep your current profile and choose a different folder?"_ Never silently overwrite either the folder's config or the browser's current session.
 - If the user chooses to load it: `localStorage`'s `dashdraft_user_id` is updated to match the folder's `customerId`, and the URL updates to `DOMAIN/{customerId}` accordingly.
 
 ### FR-18 — Workspace Data Model (Forward Compatibility)
@@ -291,36 +289,36 @@ These are governed by the architecture doc and agent-kit rules, restated here as
 
 ## 9. Assumptions & Open Questions for Product Sign-Off
 
-| # | Item | Default assumed here | Needs decision |
-|---|---|---|---|
-| 1 | Data-cleaning aggressiveness (FR-8) | Drop fully-blank rows, null-out blank cells, no fill strategy | Confirm this is acceptable for v1, or needs to be configurable sooner |
-| 2 | Default query row cap (FR-11) | `LIMIT 200`, configurable | Confirm the cap value and whether it should be user-configurable in Settings |
-| 3 | OAuth secret at rest (FR-13) | Flagged as plaintext risk, encryption recommended | Decide on passphrase-based key derivation vs. accepting the plaintext risk for v1 |
-| 4 | Relationship enforcement (FR-9) | App-level metadata, not DB-level FK constraints | Confirm this trade-off is acceptable |
-| 5 | Hash algorithm/salting (FR-10) | Deterministic SHA-256, unsalted, to preserve groupability | Confirm deterministic (groupable) hashing is desired over a stronger salted hash that would break `GROUP BY` use cases |
-| 6 | ID format (FR-3) | `nanoid`, 21 chars | Confirm no preference for UUID or a shorter custom scheme |
+| #   | Item                                | Default assumed here                                          | Needs decision                                                                                                         |
+| --- | ----------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| 1   | Data-cleaning aggressiveness (FR-8) | Drop fully-blank rows, null-out blank cells, no fill strategy | Confirm this is acceptable for v1, or needs to be configurable sooner                                                  |
+| 2   | Default query row cap (FR-11)       | `LIMIT 200`, configurable                                     | Confirm the cap value and whether it should be user-configurable in Settings                                           |
+| 3   | OAuth secret at rest (FR-13)        | Flagged as plaintext risk, encryption recommended             | Decide on passphrase-based key derivation vs. accepting the plaintext risk for v1                                      |
+| 4   | Relationship enforcement (FR-9)     | App-level metadata, not DB-level FK constraints               | Confirm this trade-off is acceptable                                                                                   |
+| 5   | Hash algorithm/salting (FR-10)      | Deterministic SHA-256, unsalted, to preserve groupability     | Confirm deterministic (groupable) hashing is desired over a stronger salted hash that would break `GROUP BY` use cases |
+| 6   | ID format (FR-3)                    | `nanoid`, 21 chars                                            | Confirm no preference for UUID or a shorter custom scheme                                                              |
 
 ---
 
 ## 10. Traceability to Original Feature List
 
-| Your # | Requirement | FR ID(s) |
-|---|---|---|
-| 1 | Landing page with diagram + step guide + GIFs | FR-1 |
-| 2 | CTA → dynamic dashboard URL | FR-2 |
-| 3 | User ID in localStorage | FR-3 |
-| 4 | Onboarding progress checklist | FR-4 |
-| 5 | Upload CSV/TSV/Excel → SQL table | FR-5 |
-| 6 | Rename table/columns | FR-6 |
-| 7 | Append rows via file upload | FR-7 |
-| 8 | Auto-clean empty cells | FR-8 |
-| 9 | Type conversion + FK relationships via UI | FR-9 |
-| 10 | Hash / opt-out column | FR-10 |
-| 11 | Block SELECT * / raw-data-exposing queries | FR-11 |
-| 12 | Query log, bulk delete, txt export | FR-12 |
-| 13 | Local JSON config (customer id, OAuth, preferences) | FR-13 |
-| 14 | Settings — regenerate OAuth key | FR-14 |
-| 15 | Analytics (upcoming) | FR-15 |
-| 16 | Sidebar: Analytics / Tables / Settings | FR-16 |
-| 17 | Import existing data folder | FR-17 |
-| 18 | Workspace concept, forward-compatible | FR-18 |
+| Your # | Requirement                                         | FR ID(s) |
+| ------ | --------------------------------------------------- | -------- |
+| 1      | Landing page with diagram + step guide + GIFs       | FR-1     |
+| 2      | CTA → dynamic dashboard URL                         | FR-2     |
+| 3      | User ID in localStorage                             | FR-3     |
+| 4      | Onboarding progress checklist                       | FR-4     |
+| 5      | Upload CSV/TSV/Excel → SQL table                    | FR-5     |
+| 6      | Rename table/columns                                | FR-6     |
+| 7      | Append rows via file upload                         | FR-7     |
+| 8      | Auto-clean empty cells                              | FR-8     |
+| 9      | Type conversion + FK relationships via UI           | FR-9     |
+| 10     | Hash / opt-out column                               | FR-10    |
+| 11     | Block SELECT * / raw-data-exposing queries          | FR-11    |
+| 12     | Query log, bulk delete, txt export                  | FR-12    |
+| 13     | Local JSON config (customer id, OAuth, preferences) | FR-13    |
+| 14     | Settings — regenerate OAuth key                     | FR-14    |
+| 15     | Analytics (upcoming)                                | FR-15    |
+| 16     | Sidebar: Analytics / Tables / Settings              | FR-16    |
+| 17     | Import existing data folder                         | FR-17    |
+| 18     | Workspace concept, forward-compatible               | FR-18    |

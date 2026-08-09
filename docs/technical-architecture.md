@@ -14,7 +14,7 @@ Define the technical foundation for a tool that lets a user:
 3. Answer natural-language questions against the data **without** the raw dataset ever leaving the user's machine or being sent as LLM context — only schema and query results cross the wire, keeping token usage low.
 4. Route MCP traffic through a relay server that we control, but which never sees plaintext data (transit encryption, zero payload retention).
 
-This document defines *how* we build it, not *what* it does feature-by-feature — that's the FRD.
+This document defines _how_ we build it, not _what_ it does feature-by-feature — that's the FRD.
 
 ---
 
@@ -56,26 +56,26 @@ Key architectural decision: the relay is a **dumb, stateless pipe**. It terminat
 
 ## 3. Tech Stack
 
-| Layer | Choice | Notes |
-|---|---|---|
-| Frontend framework | React 18 + Vite | Fast dev server, native ESM, no framework lock-in |
-| Frontend language | TypeScript (strict) | Required across the entire repo, no exceptions |
-| Routing / URL state | React Router v7 (data mode) + `nuqs` | See §5.1 for rationale |
-| In-browser SQL | `sql.js` (SQLite via WASM) | Optionally `absurd-sql` if we need IndexedDB persistence later |
-| CSV parsing | `papaparse` | Streaming parse for large files |
-| Local file access | File System Access API | Chromium-only; documented fallback for other browsers |
-| Client-side crypto | WebCrypto API (AES-GCM + ECDH key exchange) | No custom crypto — browser-native primitives only |
-| Backend framework | Express (Node.js 20 LTS) + TypeScript | Per requirement |
-| WebSocket bridge | `ws` (mounted on the same HTTP server as Express) | Express has no native WS support; `ws` attaches to the same `http.Server` instance |
-| MCP protocol | `@modelcontextprotocol/sdk` | Official SDK for server-side MCP + Streamable HTTP/SSE transport |
-| Schema validation | `zod` | Shared between frontend and relay via a shared package — single source of truth for message shapes |
-| Monorepo tooling | `pnpm` workspaces + Turborepo | See §4 |
-| Testing (unit) | Vitest | Shared config across all packages |
-| Testing (component) | React Testing Library | |
-| Testing (e2e) | Playwright | Covers upload → query → result flow |
-| Testing (API) | Supertest | Relay endpoint contract tests |
-| Lint / format | ESLint (flat config) + Prettier | Shared root config, no per-package overrides without justification |
-| CI/CD | GitHub Actions | Lint → typecheck → test → build, gated on all four |
+| Layer               | Choice                                            | Notes                                                                                              |
+| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Frontend framework  | React 18 + Vite                                   | Fast dev server, native ESM, no framework lock-in                                                  |
+| Frontend language   | TypeScript (strict)                               | Required across the entire repo, no exceptions                                                     |
+| Routing / URL state | React Router v7 (data mode) + `nuqs`              | See §5.1 for rationale                                                                             |
+| In-browser SQL      | `sql.js` (SQLite via WASM)                        | Optionally `absurd-sql` if we need IndexedDB persistence later                                     |
+| CSV parsing         | `papaparse`                                       | Streaming parse for large files                                                                    |
+| Local file access   | File System Access API                            | Chromium-only; documented fallback for other browsers                                              |
+| Client-side crypto  | WebCrypto API (AES-GCM + ECDH key exchange)       | No custom crypto — browser-native primitives only                                                  |
+| Backend framework   | Express (Node.js 20 LTS) + TypeScript             | Per requirement                                                                                    |
+| WebSocket bridge    | `ws` (mounted on the same HTTP server as Express) | Express has no native WS support; `ws` attaches to the same `http.Server` instance                 |
+| MCP protocol        | `@modelcontextprotocol/sdk`                       | Official SDK for server-side MCP + Streamable HTTP/SSE transport                                   |
+| Schema validation   | `zod`                                             | Shared between frontend and relay via a shared package — single source of truth for message shapes |
+| Monorepo tooling    | `pnpm` workspaces + Turborepo                     | See §4                                                                                             |
+| Testing (unit)      | Vitest                                            | Shared config across all packages                                                                  |
+| Testing (component) | React Testing Library                             |                                                                                                    |
+| Testing (e2e)       | Playwright                                        | Covers upload → query → result flow                                                                |
+| Testing (API)       | Supertest                                         | Relay endpoint contract tests                                                                      |
+| Lint / format       | ESLint (flat config) + Prettier                   | Shared root config, no per-package overrides without justification                                 |
+| CI/CD               | GitHub Actions                                    | Lint → typecheck → test → build, gated on all four                                                 |
 
 **Explicitly rejected for now:** Next.js (no server-rendering need, adds complexity we don't need for a client-heavy app), NestJS (Express is sufficient and lighter for a thin relay), Fastify (Express specified by requirement).
 
@@ -128,9 +128,10 @@ repo/
 
 - `nuqs` gives type-safe, validated (zod-backed) search-param state with minimal boilerplate, avoiding the common footgun of manually parsing/serializing `URLSearchParams`.
 - Keeping UI state in the URL (rather than only in React state or a global store) means a user can refresh mid-session without losing their place, and makes debugging/support easier (a URL fully describes what the user was looking at).
-- **What does *not* go in the URL:** anything sensitive — no encryption keys, no OAuth tokens, no raw data. URL state is for navigation/view state only.
+- **What does _not_ go in the URL:** anything sensitive — no encryption keys, no OAuth tokens, no raw data. URL state is for navigation/view state only.
 
 **Data flow inside the browser:**
+
 1. `papaparse` streams the CSV into memory.
 2. `sql.js` creates an in-memory SQLite table from the parsed rows.
 3. If the user selected a local folder, the resulting `.sqlite` file is written back via the File System Access API (`showDirectoryPicker` + `FileSystemWritableFileStream`).
@@ -143,7 +144,7 @@ repo/
 Responsibilities, deliberately minimal:
 
 1. **MCP endpoint** — implements Streamable HTTP/SSE transport (via `@modelcontextprotocol/sdk`) so ChatGPT/Gemini can call it as a standard remote MCP server.
-2. **OAuth 2.1 + PKCE** — authenticates the *AI platform's request*, not the payload. This is the access-control layer; encryption (below) is the confidentiality layer. They're independent and both required.
+2. **OAuth 2.1 + PKCE** — authenticates the _AI platform's request_, not the payload. This is the access-control layer; encryption (below) is the confidentiality layer. They're independent and both required.
 3. **Bridge** — on receiving a validated MCP tool call, looks up the requesting user's live WebSocket session (keyed by an opaque session ID issued at connect time, never by anything derived from the data itself) and forwards the ciphertext payload down; streams the browser's ciphertext response back up as the tool result.
 
 The relay holds **no table data, no query history, no decrypted content** at any point — see §5.4 for the enforcement mechanism, not just the intent.
@@ -154,13 +155,13 @@ The relay holds **no table data, no query history, no decrypted content** at any
 
 ### 5.4 Security Architecture
 
-| Concern | Mechanism |
-|---|---|
-| Transit encryption (network layer) | `wss://` (browser↔relay), `https://` (relay↔AI platform) — TLS everywhere, no exceptions |
-| Payload confidentiality (application layer) | AES-GCM encryption of tool-call payloads in the browser via WebCrypto before they enter the WebSocket; relay forwards ciphertext only and never holds the key |
-| Access control | OAuth 2.1 + PKCE on the MCP endpoint, per the MCP authorization spec |
-| Zero retention | Relay is stateless by design: no request/response body logging, no database, no disk writes of payload data. Enforced via lint rule + code review checklist (§6.6), not just policy |
-| Auditability | Relay source is small and open enough to be independently reviewed — a design constraint, not an afterthought |
+| Concern                                     | Mechanism                                                                                                                                                                           |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Transit encryption (network layer)          | `wss://` (browser↔relay), `https://` (relay↔AI platform) — TLS everywhere, no exceptions                                                                                            |
+| Payload confidentiality (application layer) | AES-GCM encryption of tool-call payloads in the browser via WebCrypto before they enter the WebSocket; relay forwards ciphertext only and never holds the key                       |
+| Access control                              | OAuth 2.1 + PKCE on the MCP endpoint, per the MCP authorization spec                                                                                                                |
+| Zero retention                              | Relay is stateless by design: no request/response body logging, no database, no disk writes of payload data. Enforced via lint rule + code review checklist (§6.6), not just policy |
+| Auditability                                | Relay source is small and open enough to be independently reviewed — a design constraint, not an afterthought                                                                       |
 
 **Explicit limitation to document publicly:** because the AI platform's backend must read plaintext to answer the user, this is "encrypted in transit with zero server-side retention," not strict end-to-end encryption in the two-party sense. Marketing copy and docs must reflect this distinction accurately (see prior discussion) — do not describe this as "E2E encrypted" without the confidential-computing enclave upgrade noted as a future option.
 
@@ -205,7 +206,7 @@ The relay holds **no table data, no query history, no decrypted content** at any
 
 ### 6.6 Error Handling & Logging Policy
 
-- **Hard rule, enforced in code review:** the relay must never `console.log`, write to a file, or send to any logging/observability service anything derived from tool-call *payload contents*. Logging is restricted to: connection lifecycle events, error types/codes, timing metrics, and opaque session IDs — never the ciphertext, never (obviously) any decrypted content, since the relay shouldn't have any to begin with.
+- **Hard rule, enforced in code review:** the relay must never `console.log`, write to a file, or send to any logging/observability service anything derived from tool-call _payload contents_. Logging is restricted to: connection lifecycle events, error types/codes, timing metrics, and opaque session IDs — never the ciphertext, never (obviously) any decrypted content, since the relay shouldn't have any to begin with.
 - All errors crossing the relay boundary use a shared `ErrorEnvelope` schema (`packages/mcp-contracts`) with a stable `code` field — never leak stack traces or internal paths to the AI platform or the browser.
 - Frontend: user-facing errors are mapped from internal error codes to plain-language messages in one central place (`lib/errors.ts`), not inlined ad hoc across components.
 

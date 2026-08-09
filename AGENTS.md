@@ -26,13 +26,13 @@ When a task involves trade-offs, resolve them in this order:
 
 ## Where things live
 
-| Need | Location |
-|---|---|
-| Coding standards (TS/React/Express conventions) | `.agents/rules/code-standards.md` |
-| Architecture boundaries + security invariants | `.agents/rules/architecture-and-security.md` |
-| Performance/optimization guidance | `.agents/rules/performance.md` |
-| Design system (tokens, components, dark mode) | `.agents/skills/design-system/` |
-| Component scaffolding workflow | `.agents/workflows/new-component.md` |
+| Need                                            | Location                                     |
+| ----------------------------------------------- | -------------------------------------------- |
+| Coding standards (TS/React/Express conventions) | `.agents/rules/code-standards.md`            |
+| Architecture boundaries + security invariants   | `.agents/rules/architecture-and-security.md` |
+| Performance/optimization guidance               | `.agents/rules/performance.md`               |
+| Design system (tokens, components, dark mode)   | `.agents/skills/design-system/`              |
+| Component scaffolding workflow                  | `.agents/workflows/new-component.md`         |
 
 ## Ground rules for agent behavior in this repo
 
