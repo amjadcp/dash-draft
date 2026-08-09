@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQueryState } from 'nuqs';
+import { WorkspaceProvider } from '../state/workspace-context';
 import { AppLayout } from '../components/layout/app-layout';
 import { sidebarTabParser } from '../components/layout/sidebar';
 import { LandingPage } from '../components/landing/landing-page';
@@ -28,5 +29,9 @@ export function RootRoute(): React.ReactElement {
     }
   };
 
-  return <AppLayout>{renderTabContent()}</AppLayout>;
+  return (
+    <WorkspaceProvider>
+      <AppLayout>{renderTabContent()}</AppLayout>
+    </WorkspaceProvider>
+  );
 }

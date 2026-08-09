@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "copy-wasm": "node -e \"const fs = require('fs'); const path = require('path'); const sqlJsDir = path.dirname(require.resolve('sql.js')); const src = path.join(sqlJsDir, 'sql-wasm.wasm'); const destDir = path.join(process.cwd(), 'public'); fs.mkdirSync(destDir, { recursive: true }); fs.copyFileSync(src, path.join(destDir, 'sql-wasm.wasm'));\"",
+    "predev": "pnpm copy-wasm",
+    "prebuild": "pnpm copy-wasm",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",

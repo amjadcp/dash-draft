@@ -1,12 +1,18 @@
-import initSqlJs, { type Database, type SqlJsStatic } from 'sql.js';
+import initSqlJsFactory, { type Database, type SqlJsStatic } from 'sql.js';
+import sqlWasmUrl from 'sql.js/dist/sql-wasm.wasm?url';
 import type { InferredColumn } from '../ingest/parser';
 
 let sqlStaticPromise: Promise<SqlJsStatic> | null = null;
 
 export function getSqlJs(): Promise<SqlJsStatic> {
   if (!sqlStaticPromise) {
-    sqlStaticPromise = initSqlJs({
-      locateFile: (file: string) => `https://sql.js.org/dist/${file}`,
+    const initFn =
+      typeof initSqlJsFactory === 'function'
+        ? initSqlJsFactory
+        : ((initSqlJsFactory as unknown as { default: typeof initSqlJsFactory }).default || initSqlJsFactory);
+
+    sqlStaticPromise = initFn({
+      locateFile: () => sqlWasmUrl,
     });
   }
   return sqlStaticPromise;
@@ -58,8 +64,14 @@ export function createTableFromParsedData(
       const values = columns.map((col) => {
         const val = row[col.name];
         if (val === null || val === undefined) return null;
-        if (col.selectedType === 'number') return Number(val);
-        if (col.selectedType === 'boolean') return val ? 1 : 0;
+        if (col.selectedType === 'number') {
+          const num = Number(val);
+          return Number.isNaN(num) ? null : num;
+        }
+        if (col.selectedType === 'boolean') {
+          const lower = String(val).toLowerCase();
+          return lower === 'true' || lower === '1' || lower === 'yes' ? 1 : 0;
+        }
         return String(val);
       });
       stmt.run(values);
